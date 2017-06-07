@@ -1,0 +1,29 @@
+Description: >
+  This template illustrates how to use AWS CodeBuild and AWS CodePipeline to
+  achieve continuous deployment of source code from a GitHub repository via a
+  Docker container to an Amazon EC2 Container Service cluster.
+
+
+Parameters:
+  VpcId:
+    Type: String
+    Description: VPC ID
+    Default: vpc-b03b3ed6
+
+  Subnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Default: subnet-5d95eb61,subnet-b0f63cf8
+    
+Resources:
+  LoadBalancer:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/ecs-refarch-continuous-deployment/templates/load-balancer.yaml
+      Parameters:
+        Subnets: !Ref Subnets
+        VpcId: !Ref VpcId
+
+Outputs:
+  ServiceUrl:
+    Description: The sample service that is being continuously deployed.
+    Value: !GetAtt LoadBalancer.Outputs.ServiceUrl
